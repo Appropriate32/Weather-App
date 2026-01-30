@@ -43,7 +43,7 @@ header h1 {
 /* Main Body */
 
 main {
-  height: 90vh;
+  height: 100vh;
   background: #1e213a;
   color: white;
   display: flex;

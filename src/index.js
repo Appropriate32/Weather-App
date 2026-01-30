@@ -50,19 +50,32 @@ class DisplayController {
     }
   }
 
+  async getWeatherIcon(iconName) {
+    try {
+      const iconModule = await import(`./icons/${iconName}.svg`);
+
+      return iconModule.default;
+    } catch (error) {
+      console.error(`Icon not found: ${iconName}, ${error}`);
+      const defaultIcon = await import('./icons/default.svg');
+      return defaultIcon.default;
+    }
+  }
+
   getLocation() {
     return this.inputSearch.value;
   }
 
-  displayTemperature(data) {
+  async displayTemperature(data) {
     this.locationHeading.textContent = data.address;
-    this.tempInfo.innerHTML = `<p>Icon</p>
+    const iconPath = await this.getWeatherIcon(data.days[0].icon);
+    this.tempInfo.innerHTML = `<img src="${iconPath}">
         <p class="temp">${data.days[0].temp}</p>
         <div class="temp-types">
           <p class="active">C</p>
           <p>F</p>
         </div>`;
-    this.eventContainer.innerHTML = `<p class="weather-event">${data.days[0].icon}</p>
+    this.eventContainer.innerHTML = `<p class="weather-event">${data.days[0].description}</p>
         <p class="updated-time">Updated as of 11:23 AM</p>
         <div class="weather-info">
           <p>Feels like ${data.days[0].feelslike}°</p>
@@ -71,18 +84,19 @@ class DisplayController {
         </div>`;
   }
 
-  displayForecast(data) {
+   displayForecast(data) {
     this.forecastContainer.textContent = "";
 
     const next7Days = data.days.slice(1, 8);
 
-    next7Days.forEach((day) => {
+    next7Days.forEach(async (day, index) => {
       const card = document.createElement("div");
       card.classList.add("forecast-item");
+      const iconPath = await this.getWeatherIcon(data.days[index].icon);
 
       card.innerHTML = `<div class="card-header">${this.formatDate(day.datetime)}</div>
           <div class="card-body">
-            <p>Icon</p>
+            <img src="${iconPath}">
             <div class="card-temps">
               <p>${Math.round(day.tempmax)}°</p>
               <p>${Math.round(day.tempmin)}°</p>
