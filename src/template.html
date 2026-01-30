@@ -7,16 +7,28 @@
   </head>
   <body>
     <header>
-      <h1>Forecast</h1>
+      <h1>Weather Forecast</h1>
       <div class="search-bar">
         <form action="">
-          <input type="text" placeholder="Search.." class="search-location" />
+          <input
+            type="text"
+            placeholder="Search City..."
+            class="search-location"
+          />
         </form>
       </div>
     </header>
-    <main>
+    <main class="hidden">
       <h1 class="current-location"></h1>
-      <div class="temp-info"></div>
+      <div class="temp-info">
+        <img class="icon-img" src="" alt="weather icon" />
+        <p class="temp-value">--</p>
+
+        <div class="temp-types">
+          <p class="c-btn active">C</p>
+          <p class="f-btn">F</p>
+        </div>
+      </div>
       <div class="event-container"></div>
       <div class="forecast"></div>
     </main>
