@@ -1,10 +1,21 @@
 import "./styles.css";
+const weatherClasses = [
+  "clear-day",
+  "clear-night",
+  "partly-cloudy-day",
+  "partly-cloudy-night",
+  "cloudy",
+  "rain",
+  "snow",
+  "fog",
+  "wind",
+];
 
 class ApplicationLogic {
   async getWeather(location) {
     try {
       const response = await fetch(
-        `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=metric&include=days&key=JZRVWS8M3H5SBPLUD9B8F3TZW&options=usefcst&contentType=json`,
+        `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?lang=en&unitGroup=metric&include=days&key=JZRVWS8M3H5SBPLUD9B8F3TZW&options=usefcst&contentType=json`,
       );
 
       if (!response.ok) {
@@ -51,7 +62,7 @@ class DisplayController {
           if (response) {
             this.weatherData = response;
 
-            this.displayTemperature();
+            this.displayTemperature(false);
             this.displayForecast();
           }
         });
@@ -69,7 +80,7 @@ class DisplayController {
           if (selectedUnit !== this.currentUnit) {
             this.currentUnit = selectedUnit;
 
-            this.displayTemperature();
+            this.displayTemperature(true);
             this.displayForecast();
           }
         }
@@ -100,38 +111,77 @@ class DisplayController {
     return Math.round(tempC);
   }
 
-  async displayTemperature() {
+  async displayTemperature(skipAnimation = false) {
     const data = this.weatherData;
     if (!data) return;
 
-    const today = new Date();
+    const mainContent = document.querySelector("main");
+    const updateDom = async () => {
+      mainContent.classList.remove(...weatherClasses);
 
-    const timeString = today.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-    });
-    const currentTemp = this.getConvertedTemp(data.days[0].temp);
-    this.locationHeading.textContent = data.address;
+      // Add new class
+      const icon = data.days[0].icon;
+      if (icon.includes("partly-cloudy-day")) {
+        mainContent.classList.add("partly-cloudy-day");
+      } else if (icon.includes("partly-cloudy-night")) {
+        mainContent.classList.add("partly-cloudy-night");
+      }
+      // Check clear types
+      else if (icon.includes("clear-day")) {
+        mainContent.classList.add("clear-day");
+      } else if (icon.includes("clear-night")) {
+        mainContent.classList.add("clear-night");
+      } else if (icon.includes("rain")) {
+        mainContent.classList.add("rain");
+      } else if (icon.includes("snow")) {
+        mainContent.classList.add("snow");
+      } else if (icon.includes("fog")) {
+        mainContent.classList.add("fog");
+      } else if (icon.includes("wind")) {
+        mainContent.classList.add("wind");
+      } else if (icon.includes("cloud")) {
+        mainContent.classList.add("cloudy");
+      } else {
+        mainContent.style.background = "#1e213a";
+      }
 
-    const iconPath = await this.getWeatherIcon(data.days[0].icon);
-    this.iconImg.src = iconPath;
+      // Text & Icon Updates
+      const today = new Date();
+      const timeString = today.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+      const currentTemp = this.getConvertedTemp(data.days[0].temp);
 
-    this.tempValue.textContent = `${currentTemp}°`;
-
-    if (this.currentUnit === "c") {
-      this.cBtn.classList.add("active");
-      this.fBtn.classList.remove("active");
-    } else {
-      this.cBtn.classList.remove("active");
-      this.fBtn.classList.add("active");
-    }
-    this.eventContainer.innerHTML = `<p class="weather-event">${data.days[0].description}</p>
+      this.locationHeading.textContent = data.address;
+      this.iconImg.src = await this.getWeatherIcon(data.days[0].icon);
+      this.tempValue.textContent = `${currentTemp}°`;
+      this.eventContainer.innerHTML = `<p class="weather-event">${data.days[0].description}</p>
         <p class="updated-time">Updated as of ${timeString}</p>
         <div class="weather-info">
           <p>Feels like ${this.getConvertedTemp(data.days[0].feelslike)}°</p>
           <p>Wind ${data.days[0].windspeed} km/h</p>
           <p>${data.days[0].visibility} 4 km</p>
         </div>`;
+
+      // Toggle Button State
+      if (this.currentUnit === "c") {
+        this.cBtn.classList.add("active");
+        this.fBtn.classList.remove("active");
+      } else {
+        this.cBtn.classList.remove("active");
+        this.fBtn.classList.add("active");
+      }
+    };
+    if (skipAnimation) {
+      await updateDom();
+    } else {
+      mainContent.style.opacity = "0";
+      setTimeout(async () => {
+        await updateDom();
+        mainContent.style.opacity = "1";
+      }, 300);
+    }
   }
 
   displayForecast() {
