@@ -31,7 +31,7 @@ header h1 {
   font-size: 2rem;
 }
 
-.search-bar form input[type="text"] {
+.search-location {
   background-color: rgba(77, 84, 102);
   border: none;
   padding: 0.5em;
@@ -41,11 +41,11 @@ header h1 {
   transition: 0.2s ease transform;
 }
 
-.search-bar form input[type="text"]:focus {
+.search-location:focus {
   transform: scaleY(1.2);
 }
 
-.search-bar form input[type="text"]::placeholder {
+.search-location::placeholder {
   color: rgba(140, 147, 163);
 }
 
