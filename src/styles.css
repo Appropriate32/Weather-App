@@ -40,11 +40,11 @@ header h1 {
   color: white;
   font-size: 1rem;
   border-radius: 5px;
-  transition: 2s ease background;
+  transition: 0.2s ease transform;
 }
 
 .search-location:focus {
-  transform: scaleY(1.2);
+  transform: scale(1.05);
 }
 
 .search-location::placeholder {
