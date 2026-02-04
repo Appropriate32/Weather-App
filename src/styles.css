@@ -10,9 +10,9 @@
 }
 
 body {
-  height: 100vh;
-  min-width: 1000px;
-  overflow-x: auto;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 
   background-color: #1e213a;
 }
@@ -54,7 +54,7 @@ header h1 {
 /* Main Body */
 
 main {
-  height: 100vh;
+  min-height: 100vh;
   background: #1e213a;
   color: white;
   display: flex;
@@ -228,6 +228,7 @@ footer {
   left: 0;
   width: 100%;
   padding: 0.5em;
+  margin-top: 2em;
 
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(5px);
@@ -247,4 +248,35 @@ footer a {
 footer a:hover {
   text-decoration: underline;
   color: white;
+}
+
+.icon-img {
+  width: 100px;
+}
+
+/* Media Query */
+
+@media (max-width: 750px) {
+  .forecast {
+    flex-wrap: wrap;
+    padding: 0 1em;
+  }
+
+  header {
+    flex-direction: column;
+    height: auto;
+    gap: 1em;
+    padding: 1em;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .search-location {
+    width: 100%;
+  }
+  main {
+    padding-bottom: 5em;
+  }
 }
